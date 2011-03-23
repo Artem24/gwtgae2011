@@ -12,37 +12,40 @@
 		<target.jdk>1.6</target.jdk>
 		<project.encoding>UTF-8</project.encoding>
 		<webapp.directory>${project.build.directory}/${project.build.finalName}</webapp.directory>
+		<!-- TODO The `gae.application.version` property has no impact? -->
 		<gae.application.version>1</gae.application.version>
 
 		<!-- Dependencies versions -->
-		<junit.version>4.8.1</junit.version>
-		<gwt.version>2.2.0</gwt.version>
+		<aopalliance.version>1.0</aopalliance.version>
 		<gae.version>1.4.2</gae.version>
-		<gwtp.version>0.6-SNAPSHOT</gwtp.version>
-		<objectify.version>2.2.3</objectify.version>
 		<gin.version>1.5.0</gin.version>
 		<guice.version>3.0-rc3</guice.version>
-		<aopalliance.version>1.0</aopalliance.version>
-		<slf4f.version>1.6.1</slf4f.version>
+		<gwt.version>2.2.0</gwt.version>
+		<gwtp.version>0.6-SNAPSHOT</gwtp.version>
 		<json.version>20090211</json.version>
-		<persistence-api.version>1.0</persistence-api.version>
 		<jsr107cache.version>1.1</jsr107cache.version>
+		<junit.version>4.8.1</junit.version>
+		<objectify.version>2.2.3</objectify.version>
+		<persistence-api.version>1.0</persistence-api.version>
+		<slf4f.version>1.6.1</slf4f.version>
 
 		<!-- Plugin properties -->
-		<maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
-		<maven-resources-plugin.version>2.5</maven-resources-plugin.version>
-		<maven-war-plugin.version>2.1.1</maven-war-plugin.version>
+		<gwt-maven-plugin.version>2.2.0</gwt-maven-plugin.version>
+		<hibernate-validator.version>4.0.2.GA</hibernate-validator.version>
 		<maven-assembly-plugin.version>2.2.1</maven-assembly-plugin.version>
+		<maven-clean-plugin.version>2.3</maven-clean-plugin.version>
+		<maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
 		<maven-deploy-plugin.version>2.5</maven-deploy-plugin.version>
 		<maven-eclipse-plugin.version>2.8</maven-eclipse-plugin.version>
-		<gwt-maven-plugin.version>2.2.0</gwt-maven-plugin.version>
-		<maven-gae-plugin.version>0.8.0</maven-gae-plugin.version>
+		<maven-javadoc-plugin.version>2.7</maven-javadoc-plugin.version>
+		<maven-resources-plugin.version>2.5</maven-resources-plugin.version>
+		<maven-source-plugin.version>2.1.2</maven-source-plugin.version>
+		<maven-war-plugin.version>2.1.1</maven-war-plugin.version>
+		<maven-gae-plugin.version>0.8.1</maven-gae-plugin.version>
 		<validation-api.version>1.0.0.GA</validation-api.version>
-		<hibernate-validator.version>4.0.2.GA</hibernate-validator.version>
 
 		<!-- Other configuration -->
-		<gwt.style>PRETTY</gwt.style> <!-- PRETTY style during development, <profiles> used to configure other 
-			styles -->
+		<gwt.style>PRETTY</gwt.style> <!-- PRETTY style during development, <profiles> used to configure other styles -->
 		<gae.home>${settings.localRepository}/com/google/appengine/appengine-java-sdk/${gae.version}/appengine-java-sdk-${gae.version}</gae.home>
 	</properties>
 
@@ -55,7 +58,7 @@
 			<layout>default</layout>
 		</repository>
 
-		<!-- Repository for Objectify -->
+		<!-- For Objectify -->
 		<repository>
 			<id>objectify-appengine</id>
 			<url>http://objectify-appengine.googlecode.com/svn/maven</url>
@@ -353,6 +356,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -366,6 +370,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -379,13 +384,44 @@
 				</executions>
 			</plugin>
 
-
-			<!-- DO WE ACTUALLY NEED THESE? <plugin> <groupId>org.codehaus.mojo</groupId> 
-				<artifactId>tomcat-maven-plugin</artifactId> <version>1.0</version> </plugin> 
-				<plugin> <groupId>org.mortbay.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
-				<version>7.1.2.v20100523</version> <configuration> <webAppConfig> <contextPath>/${project.name}</contextPath> 
-				</webAppConfig> </configuration> </plugin> -->
-
+			<!--
+			Some jars with <scope>provided</scope> are copied by gwt-maven-plugin because
+			of <copyWebapp>true</copyWebapp>. These jars can be safely removed here.
+			For more information, see this thread:
+			  https://groups.google.com/d/topic/codehaus-mojo-gwt-maven-plugin-users/Si8eqJsVjdE/discussion
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>${maven-clean-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>default-clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>remove-gwt-user-jar</id>
+						<phase>post-installation-test</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+						<configuration>
+							<excludeDefaultDirectories>true</excludeDefaultDirectories>
+							<filesets>
+								<fileset>
+									<directory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</directory>
+									<includes>
+										<include>gwt-user*.jar</include>
+									</includes>
+								</fileset>
+							</filesets>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 
 		<outputDirectory>${webapp.directory}/WEB-INF/classes</outputDirectory>
@@ -393,22 +429,28 @@
 
 	<profiles>
 
-		<!-- We can configure our integration server to activate this profile and 
-			perform gae:deploy, thus uploading latest snapshot to the http://1.latest.<applicationName>.appspot.com 
-			automatically -->
+		<!-- 
+		Profile for an integration build.
+		 * The GWT compilation will produce pretty and detailed JS
+		 * `mvn gae:deploy` will deploy the application to
+			  http://stage.latest.<applicationName>.appspot.com 
+		-->
 		<profile>
 			<id>integration-build</id>
 			<properties>
+				<!-- TODO The `gae.application.version` property has no impact? -->
 				<gae.application.version>stage</gae.application.version>
-				<!-- Produce pretty JS during GWT compilation for test environment -->
 				<gwt.style>DETAILED</gwt.style>
 			</properties>
 		</profile>
 
-		<!-- This profile will activate automatically during release and upload 
-			application to the http://2.latest.<applicationName>.appspot.com (We might 
-			want to set the 2nd version as our applications Default version to be accessible 
-			at http://<applicationName>.appspot.com) -->
+		<!--
+		Profile for a release build. 
+		 * `mvn release:perform` activates this profile automatically.
+		 * The GWT compilation will produce compressed and obfuscated JS
+		 * `mvn gae:deploy` will deploy the application to
+			  http://stage.latest.<applicationName>.appspot.com 
+		-->
 		<profile>
 			<id>release-build</id>
 			<activation>
@@ -419,10 +461,7 @@
 			</activation>
 
 			<properties>
-				<!-- During release, set application version in appengine-web.xml to 
-					2 -->
 				<gae.application.version>release</gae.application.version>
-				<!-- Produce compressed JS during GWT compilation for production environment -->
 				<gwt.style>OBFUSCATED</gwt.style>
 			</properties>
 		</profile>
