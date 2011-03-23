@@ -204,7 +204,7 @@
 			<groupId>com.gwtplatform</groupId>
 			<artifactId>gwtp-dispatch-client</artifactId>
 			<version>${gwtp.version}</version>
-			<!-- TODO We should send some classes to "shared" in GWTP so we can use scope provided here -->
+			<!-- TODO: We should send some classes to "shared" in GWTP so we can use scope provided here -->
 			<!-- <scope>provided</scope>  -->
 		</dependency>
 		<dependency>
@@ -270,10 +270,6 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4f.version}</version>
 		</dependency>
-
-		<!-- DO WE ACTUALLY NEED THESE? <dependency> <groupId>javax.servlet</groupId> 
-			<artifactId>servlet-api</artifactId> <version>2.5</version> <scope>provided</scope> 
-			</dependency> -->
 	</dependencies>
 
 	<build>
@@ -316,12 +312,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>${maven-deploy-plugin.version}</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
-					<goals>gae:deploy</goals>
+					<!-- maven-gae-plugin handles deployment -->
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 
@@ -363,9 +356,6 @@
 					<server>com.google.appengine.tools.development.gwt.AppEngineLauncher</server>
 					<copyWebapp>true</copyWebapp>
 					<runTarget>index.html</runTarget>
-					<!-- TODO: Is this needed still? Keep duplicate JDT off classpath or 
-						module will not load <runClasspathExcludes> <runClasspathExclude>jasper-jdt-6.0.29</runClasspathExclude> 
-						</runClasspathExcludes> -->
 				</configuration>
 				<executions>
 					<execution>
@@ -383,6 +373,14 @@
 				<groupId>net.kindleit</groupId>
 				<artifactId>maven-gae-plugin</artifactId>
 				<version>${maven-gae-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- Attaching sources and javadoc -->
