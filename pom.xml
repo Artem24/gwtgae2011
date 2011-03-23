@@ -4,7 +4,7 @@
 	<groupId>com.googlecode.gwtgae2011</groupId>
 	<artifactId>gwtgae2011</artifactId>
 	<packaging>war</packaging>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<name>Gwt Gae Demo, Google IO 2011</name>
 
     <licenses>
