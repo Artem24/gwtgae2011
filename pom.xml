@@ -54,7 +54,7 @@
 		<gin.version>1.5.0</gin.version>
 		<guice.version>3.0-rc3</guice.version>
 		<gwt.version>2.2.0</gwt.version>
-		<gwtp.version>0.5.1</gwtp.version>
+		<gwtp.version>0.6-SNAPSHOT</gwtp.version>
 		<json.version>20090211</json.version>
 		<jsr107cache.version>1.1</jsr107cache.version>
 		<junit.version>4.8.1</junit.version>
@@ -204,17 +204,11 @@
 			<groupId>com.gwtplatform</groupId>
 			<artifactId>gwtp-dispatch-client</artifactId>
 			<version>${gwtp.version}</version>
-			<!-- TODO: We should send some classes to "shared" in GWTP so we can use scope provided here -->
-			<!-- <scope>provided</scope>  -->
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.gwtplatform</groupId>
-			<artifactId>gwtp-dispatch-shared</artifactId>
-			<version>${gwtp.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.gwtplatform</groupId>
-			<artifactId>gwtp-dispatch-server</artifactId>
+			<artifactId>gwtp-dispatch-server-guice</artifactId>
 			<version>${gwtp.version}</version>
 		</dependency>
 		<dependency>
@@ -328,9 +322,7 @@
 					<downloadJavadocs>true</downloadJavadocs>
 					<wtpversion>2.0</wtpversion>
 					<additionalBuildcommands>
-						<buildCommand>
-							<name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
-						</buildCommand>
+						<buildCommand>com.google.gwt.eclipse.core.gwtProjectValidator</buildCommand>
 					</additionalBuildcommands>
 					<additionalProjectnatures>
 						<projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
