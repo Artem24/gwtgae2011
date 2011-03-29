@@ -16,21 +16,14 @@
 
 package com.googlecode.gwtgae2011.shared.proxy;
 
-import java.util.List;
-
-import com.google.gwt.requestfactory.shared.EntityProxy;
 import com.google.gwt.requestfactory.shared.ProxyFor;
-import com.googlecode.gwtgae2011.server.domain.Maze;
+import com.google.gwt.requestfactory.shared.ValueProxy;
+import com.googlecode.gwtgae2011.shared.Point;
 
-@ProxyFor(Maze.class)
-public interface MazeProxy extends EntityProxy {
-  Long getId();
-  
-  Integer getVersion();
-  
-  Integer getSizeX();
-  Integer getSizeY();
-  
-  List<VectorProxy> getHorizontalWalls();
-  List<VectorProxy> getVerticalWalls();
+@ProxyFor(Point.class)
+public interface PointProxy extends ValueProxy {  
+  Float getX();
+  Float getY();
+  void setX(Float x);
+  void setY(Float y);
 }

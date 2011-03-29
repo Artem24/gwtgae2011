@@ -17,6 +17,8 @@
 package com.googlecode.gwtgae2011.client.main;
 
 import com.gwtplatform.mvp.client.gin.AbstractPresenterModule;
+import com.googlecode.gwtgae2011.client.main.ListPresenter;
+import com.googlecode.gwtgae2011.client.main.ListView;
 
 public class MainModule extends AbstractPresenterModule {
   @Override
@@ -24,7 +26,8 @@ public class MainModule extends AbstractPresenterModule {
     // Presenters
     bindPresenter(MainPresenter.class, MainPresenter.MyView.class,
         MainView.class, MainPresenter.MyProxy.class);
-    bindPresenter(MazePresenter.class, MazePresenter.MyView.class,
-        MazeView.class, MazePresenter.MyProxy.class);
+    bindPresenter(SketchPresenter.class, SketchPresenter.MyView.class,
+        SketchView.class, SketchPresenter.MyProxy.class);
+	bindPresenter(ListPresenter.class, ListPresenter.MyView.class, ListView.class, ListPresenter.MyProxy.class);
   }
 }

@@ -16,14 +16,26 @@
 
 package com.googlecode.gwtgae2011.shared.proxy;
 
-import com.google.gwt.requestfactory.shared.ProxyFor;
-import com.google.gwt.requestfactory.shared.ValueProxy;
-import com.googlecode.gwtgae2011.shared.Vector;
+import java.util.Date;
+import java.util.List;
 
-@ProxyFor(Vector.class)
-public interface VectorProxy extends ValueProxy {
-  Integer getX();
-  Integer getY();
-  void setX(Integer x);
-  void setY(Integer y);
+import com.google.gwt.requestfactory.shared.EntityProxy;
+import com.google.gwt.requestfactory.shared.ProxyFor;
+import com.googlecode.gwtgae2011.server.domain.Sketch;
+import com.googlecode.gwtgae2011.server.locator.ObjectifyLocator;
+
+@ProxyFor(value = Sketch.class, locator = ObjectifyLocator.class)
+public interface SketchProxy extends EntityProxy {
+  Long getId();
+  
+  Integer getVersion();
+
+  String getTitle();
+  void setTitle(String newTitle);
+  Date getCreationDate();
+
+  List<StrokeProxy> getStrokes();
+  void setStrokes(List<StrokeProxy> list);
+
+
 }

@@ -18,69 +18,72 @@ package com.googlecode.gwtgae2011.shared;
 
 import java.io.Serializable;
 
-public class Vector implements Serializable {
+import com.google.gwt.requestfactory.shared.RequestContext;
+import com.googlecode.gwtgae2011.shared.proxy.PointProxy;
+
+public class Point implements Serializable {
   private static final long serialVersionUID = 1L;
   
-  private int x;
-  private int y;
+  private float x;
+  private float y;
   
-  public Vector() {
+  public Point() {
     this(0, 0);
   }
   
-  public Vector(int x, int y) {
+  public Point(float x, float y) {
     this.x = x;
     this.y = y;
   }
   
-  public Vector(Vector v) {
+  public Point(Point v) {
     this(v.x, v.y);
   }
   
-  public Integer getX() {
+  public Float getX() {
     return x;
   }
   
-  public Integer getY() {
+  public Float getY() {
     return y;
   }
   
-  public void setX(Integer x) {
+  public void setX(Float x) {
     this.x = x;
   }
   
-  public void setY(Integer y) {
+  public void setY(Float y) {
     this.y = y;
   }
   
-  public void add(double x, double y) {
+  public void add(float x, float y) {
     this.x += x;
     this.y += y;
   }
   
-  public void add(Vector v) {
+  public void add(Point v) {
     add(v.x, v.y);
   }
   
-  public void sub(Vector v) {
+  public void sub(Point v) {
     sub(v.x, v.y);
   }
   
-  public void sub(double x, double y) {
+  public void sub(float x, float y) {
     this.x -= x;
     this.y -= y;
   }
   
-  public void mult(double x, double y) {
+  public void mult(float x, float y) {
     this.x *= x;
     this.y *= y;
   }
   
-  public void mult(Vector v) {
+  public void mult(Point v) {
     mult(v.x, v.y);
   }
   
-  public void mult(double c) {
+  public void mult(float c) {
     mult(c, c);
   }
   
@@ -96,16 +99,27 @@ public class Vector implements Serializable {
     return x * x + y * y;
   }
   
-  public void set(Vector v) {
+  public void set(Point v) {
     x = v.x;
     y = v.y;
   }
   
-  public static Vector sub(Vector a, Vector b) {
-    return new Vector(a.x - b.x, a.y - b.y);
+  public static Point sub(Point a, Point b) {
+    return new Point(a.x - b.x, a.y - b.y);
   }
   
-  public static Vector mult(Vector v, int c) {
-    return new Vector(v.x * c, v.y * c);
+  public static Point mult(Point v, int c) {
+    return new Point(v.x * c, v.y * c);
+  }
+
+  public PointProxy toProxy(RequestContext context) {
+    PointProxy result = context.create(PointProxy.class);
+    result.setX(x);
+    result.setY(y);
+    return result;
+  }
+  
+  public static Point fromProxy(PointProxy pointProxy) {
+    return new Point(pointProxy.getX(), pointProxy.getY());
   }
 }

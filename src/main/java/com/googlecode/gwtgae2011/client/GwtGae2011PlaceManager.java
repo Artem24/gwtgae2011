@@ -35,7 +35,7 @@ public class GwtGae2011PlaceManager extends PlaceManagerImpl {
 
   @Override
   public void revealDefaultPlace() {
-    revealPlace(new PlaceRequest(NameTokens.SUDOKU));
+    revealPlace(new PlaceRequest(NameTokens.LIST));
   }
 
 }

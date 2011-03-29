@@ -16,9 +16,11 @@
 
 package com.googlecode.gwtgae2011.client.main;
 
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
@@ -27,12 +29,17 @@ import com.gwtplatform.mvp.client.ViewImpl;
  */
 public class MainView extends ViewImpl implements MainPresenter.MyView {
 
-  private static final int TOP_SIZE = 50;
-  
-  private final DockLayoutPanel widget = new DockLayoutPanel(Unit.PX);
+  private final Widget widget;
 
-  public Widget north;
-  public Widget center;
+  public interface Binder extends UiBinder<Widget, MainView> { }
+  
+  @UiField
+  public LayoutPanel center;
+
+  @Inject
+  public MainView(final Binder binder) {
+    widget = binder.createAndBindUi(this);
+  }
   
   @Override
   public Widget asWidget() {
@@ -41,23 +48,11 @@ public class MainView extends ViewImpl implements MainPresenter.MyView {
 
   @Override
   public void setInSlot(Object slot, Widget content) {
-    if(slot == MainPresenter.TOP_SLOT_TYPE) {
-      removeIfNotNull(north);
-      north = content;
-      widget.addNorth(north, TOP_SIZE);
-    } else if(slot == MainPresenter.CENTRAL_SLOT_TYPE) {
-      removeIfNotNull(center);
-      center = content;
-      widget.add(center);
+    if(slot == MainPresenter.CENTRAL_SLOT_TYPE) {
+      center.clear();
+      center.add(content);
     } else {
       super.setInSlot(slot, content);
     }
   }
-
-  private void removeIfNotNull(Widget children) {
-    if (children != null) {
-      widget.remove(children);
-    }
-  }
-  
 }

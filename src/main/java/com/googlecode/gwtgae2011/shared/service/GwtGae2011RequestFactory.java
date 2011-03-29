@@ -1,22 +1,34 @@
 package com.googlecode.gwtgae2011.shared.service;
 
+import java.util.List;
+
 import com.google.gwt.requestfactory.shared.Request;
 import com.google.gwt.requestfactory.shared.RequestContext;
 import com.google.gwt.requestfactory.shared.RequestFactory;
 import com.google.gwt.requestfactory.shared.Service;
-import com.googlecode.gwtgae2011.server.domain.Maze;
-import com.googlecode.gwtgae2011.shared.proxy.MazeProxy;
+import com.googlecode.gwtgae2011.server.locator.DaoServiceLocator;
+import com.googlecode.gwtgae2011.server.service.SketchDao;
+import com.googlecode.gwtgae2011.shared.proxy.SketchProxy;
+import com.googlecode.gwtgae2011.shared.proxy.StrokeProxy;
 
 public interface GwtGae2011RequestFactory extends RequestFactory {
 
   /**
-   * Service stub for methods in Maze
+   * Service stub for static methods in Sketch
    */
-  @Service(Maze.class)
-  interface MazeRequest extends RequestContext
+  @Service(value = SketchDao.class, locator = DaoServiceLocator.class)
+  interface SketchRequest extends RequestContext
   {
-    Request<MazeProxy> getMaze();
+    Request<SketchProxy> save(SketchProxy editable);
+
+    Request<SketchProxy> addStrokes(SketchProxy sketchProxy, List<StrokeProxy> strokes);
+
+    Request<SketchProxy> fetch(Long id);
+
+    Request<List<SketchProxy>> fetchRange(Integer start, Integer length);
+
+    Request<Integer> getCount();
   }
 
-  MazeRequest mazeRequest();
+  SketchRequest sketchRequest();
 }

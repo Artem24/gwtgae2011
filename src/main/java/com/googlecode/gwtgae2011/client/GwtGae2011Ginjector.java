@@ -22,11 +22,13 @@ import com.google.gwt.inject.client.Ginjector;
 import com.google.inject.Provider;
 import com.googlecode.gwtgae2011.client.main.MainModule;
 import com.googlecode.gwtgae2011.client.main.MainPresenter;
-import com.googlecode.gwtgae2011.client.main.MazePresenter;
+import com.googlecode.gwtgae2011.client.main.SketchPresenter;
 import com.googlecode.gwtgae2011.shared.service.GwtGae2011RequestFactory;
 import com.gwtplatform.dispatch.client.gin.DispatchAsyncModule;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyFailureHandler;
+import com.google.gwt.inject.client.AsyncProvider;
+import com.googlecode.gwtgae2011.client.main.ListPresenter;
 
 /**
  * The main Gin Injector of the application
@@ -42,7 +44,8 @@ public interface GwtGae2011Ginjector extends Ginjector {
 
   // Presenters from MainModule
   Provider<MainPresenter> getMainPagePresenter();
-  Provider<MazePresenter> getSudokuPresenter();
+  Provider<SketchPresenter> getSudokuPresenter();
+  AsyncProvider<ListPresenter> getListPresenter();
 
   // Presenters from AdminModule
 

@@ -39,9 +39,6 @@ public class MainPresenter extends Presenter<MainPresenter.MyView, MainPresenter
   public interface MyView extends View { }
 
   @ContentSlot
-  public static final Type<RevealContentHandler<?>> TOP_SLOT_TYPE = new Type<RevealContentHandler<?>>();
-
-  @ContentSlot
   public static final Type<RevealContentHandler<?>> CENTRAL_SLOT_TYPE = new Type<RevealContentHandler<?>>();
 
   @Inject

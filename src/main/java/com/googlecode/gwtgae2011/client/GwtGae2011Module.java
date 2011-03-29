@@ -23,7 +23,9 @@ import com.google.gwt.core.client.impl.SchedulerImpl;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.inject.client.AbstractGinModule;
+import com.google.inject.Provides;
 import com.googlecode.gwtgae2011.shared.service.GwtGae2011RequestFactory;
+import com.googlecode.gwtgae2011.shared.service.GwtGae2011RequestFactory.SketchRequest;
 import com.gwtplatform.mvp.client.DefaultProxyFailureHandler;
 import com.gwtplatform.mvp.client.RootPresenter;
 import com.gwtplatform.mvp.client.proxy.ParameterTokenFormatter;
@@ -45,5 +47,10 @@ public class GwtGae2011Module extends AbstractGinModule {
     bind(ProxyFailureHandler.class).to(DefaultProxyFailureHandler.class).in(Singleton.class);
     bind(Scheduler.class).to(SchedulerImpl.class).in(Singleton.class);
     bind(GwtGae2011RequestFactory.class).in(Singleton.class);
+  }
+
+  @Provides
+  SketchRequest provideSketchRequest(GwtGae2011RequestFactory requestFactory) {
+    return requestFactory.sketchRequest();
   }
 }
