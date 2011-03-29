@@ -17,8 +17,8 @@ public class SketchDao extends ObjectifyDao<Sketch>
     return sketch;
   }
   
-  public Sketch addStrokes(Sketch sketch, List<Stroke> strokes) {
-    sketch.addStrokes(strokes);
+  public Sketch addStroke(Sketch sketch, Stroke stroke) {
+    sketch.addStroke(stroke);
     put(sketch);
     return sketch;
   }

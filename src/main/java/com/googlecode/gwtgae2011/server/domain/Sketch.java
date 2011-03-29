@@ -60,7 +60,7 @@ public class Sketch extends DatastoreObject {
     this.strokes = strokes;
   }
 
-  public void addStrokes(List<Stroke> strokes) {
-    this.strokes.addAll(strokes);
+  public void addStroke(Stroke stroke) {
+    strokes.add(stroke);
   }
 }

@@ -16,14 +16,12 @@
 
 package com.googlecode.gwtgae2011.client.main;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.requestfactory.shared.Receiver;
-import com.google.gwt.requestfactory.shared.ServerFailure;
 import com.google.inject.Provider;
 import com.googlecode.gwtgae2011.client.NameTokens;
 import com.googlecode.gwtgae2011.shared.Stroke;
@@ -44,7 +42,6 @@ import com.gwtplatform.mvp.client.proxy.RevealContentEvent;
 public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPresenter.MyProxy> {
 
   private final Provider<SketchRequest> sketchRequestProvider;
-  private final List<Stroke> strokesToAdd = new ArrayList<Stroke>();
   
   @Inject
   public SketchPresenter(EventBus eventBus, MyView view, MyProxy proxy,
@@ -60,8 +57,6 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
 
   private Long id;
   private SketchProxy sketchProxy;
-  private boolean callInProgress;
-  private String currentTitle;
   
   public interface MyView extends View {
     public void setPresenter(SketchPresenter presenter);
@@ -82,14 +77,11 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
     getView().setTitle("Untitled");
     getView().clear();
     if (id != null) {
-      callInProgress = true;
       sketchRequestProvider.get().fetch(id).with("strokes").fire(new Receiver<SketchProxy>() {
         @Override
         public void onSuccess(SketchProxy sketchProxy) {
           SketchPresenter.this.sketchProxy = sketchProxy;
           draw(sketchProxy);
-          callInProgress = false;
-          callServerIfNeeded();
         }
       });
     }
@@ -105,55 +97,40 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
 
   public void addNewStroke(Stroke stroke) {
     getView().addStroke(stroke);
-    strokesToAdd.add(stroke);
-    callServerIfNeeded();
+    SketchRequest request = sketchRequestProvider.get();
+    SketchProxy editable = getEditableProxy(request);
+    
+    request.addStroke(editable, stroke.toProxy(request)).fire(new Receiver<SketchProxy>() {
+      @Override
+      public void onSuccess(SketchProxy sketchProxy) {
+        SketchPresenter.this.sketchProxy = sketchProxy;
+      }
+    });
   }
 
   public void setTitle(String title) {
-    if (currentTitle == null || !currentTitle.equals(title)) {
-      currentTitle = title;
+    if (title == null) {
+      return;      
+    }
+    if (sketchProxy == null || !title.equals(sketchProxy.getTitle())) {
       getView().setTitle(title);  
-      callServerIfNeeded();
-    }
-  }
-  
-  private void callServerIfNeeded() {
-    if (callInProgress) {
-      return;
-    }
-    
-    SketchRequest request = sketchRequestProvider.get();
-    if (sketchProxy == null) {
-      sketchProxy = request.create(SketchProxy.class);
-    }
-
-    if (!strokesToAdd.isEmpty() || 
-        currentTitle != null && !currentTitle.equals(sketchProxy.getTitle())) {
-
-      SketchProxy editable = request.edit(sketchProxy);
-      
-      List<StrokeProxy> strokeProxiesToAdd = new ArrayList<StrokeProxy>(strokesToAdd.size());
-      for (Stroke stroke : strokesToAdd) {
-        strokeProxiesToAdd.add(stroke.toProxy(request));
-      }
-      strokesToAdd.clear();
-      editable.setTitle(currentTitle);
-
-      callInProgress = true;
-      request.addStrokes(editable, strokeProxiesToAdd).fire(new Receiver<SketchProxy>() {
+      SketchRequest request = sketchRequestProvider.get();
+      SketchProxy editable = getEditableProxy(request);
+      editable.setTitle(title);
+      request.save(editable).fire(new Receiver<SketchProxy>() {
         @Override
         public void onSuccess(SketchProxy sketchProxy) {
           SketchPresenter.this.sketchProxy = sketchProxy;
-          callInProgress = false;
-          callServerIfNeeded();
-        }
-        @Override
-        public void onFailure(ServerFailure error) {
-          super.onFailure(error);
-          callInProgress = false;
         }
       });
     }
+  }
+
+  private SketchProxy getEditableProxy(SketchRequest request) {
+    if (sketchProxy == null) {
+      sketchProxy = request.create(SketchProxy.class);
+    }
+    return request.edit(sketchProxy); 
   }
 
   @Override

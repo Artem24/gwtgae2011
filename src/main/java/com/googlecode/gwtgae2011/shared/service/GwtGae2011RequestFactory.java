@@ -21,7 +21,7 @@ public interface GwtGae2011RequestFactory extends RequestFactory {
   {
     Request<SketchProxy> save(SketchProxy editable);
 
-    Request<SketchProxy> addStrokes(SketchProxy sketchProxy, List<StrokeProxy> strokes);
+    Request<SketchProxy> addStroke(SketchProxy sketchProxy, StrokeProxy stroke);
 
     Request<SketchProxy> fetch(Long id);
 

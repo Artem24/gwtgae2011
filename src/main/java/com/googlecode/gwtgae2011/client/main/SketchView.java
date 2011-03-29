@@ -134,6 +134,7 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   @Override
   public void clear() {
     strokes.clear();
+    currentStroke = null;
     scheduleRefresh();
   }
 
