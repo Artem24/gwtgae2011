@@ -264,6 +264,9 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   public void onTouchMove(TouchMoveEvent event) {
     event.preventDefault();
     if (event.getTouches().length() > 0) {
+      if (currentStroke == null) {
+        currentStroke = new Stroke();
+      }
       Touch touch = event.getTouches().get(0);
       currentStroke.add(new Point(xPixToPos(touch.getRelativeX(canvasElement)),
           yPixToPos(touch.getRelativeY(canvasElement))));
