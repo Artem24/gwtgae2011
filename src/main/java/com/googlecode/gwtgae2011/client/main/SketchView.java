@@ -215,7 +215,7 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   @Override
   public void addStroke(Stroke stroke) {
     strokes.add(stroke);
-    scheduleRefresh();
+    drawStroke(stroke);
   }
 
   @Override
@@ -229,7 +229,6 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   public void onMouseMove(MouseMoveEvent event) {
     if (DOM.getCaptureElement() == canvasElement) {
       addPointToCurrentStroke(event);
-      scheduleRefresh();
     }
   }
 
@@ -254,7 +253,6 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
     event.preventDefault();
     if (DOM.getCaptureElement() == canvasElement) {
       addPointToCurrentStroke(event);
-      scheduleRefresh();
     }
   }
 
@@ -274,6 +272,7 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   private void addPointToCurrentStroke(MouseEvent<?> event) {
     currentStroke.add(new Point(xPixToPos(event.getRelativeX(canvasElement)),
         yPixToPos(event.getRelativeY(canvasElement))));
+    drawLastTwoPoints(currentStroke);
   }  
 
   private void addPointToCurrentStroke(TouchEvent<?> event) {
@@ -281,13 +280,26 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
       Touch touch = event.getTouches().get(0);
       currentStroke.add(new Point(xPixToPos(touch.getRelativeX(canvasElement)),
           yPixToPos(touch.getRelativeY(canvasElement))));
+      drawLastTwoPoints(currentStroke);
     }
   }  
-  
+
+  private void drawLastTwoPoints(Stroke stroke) {
+    int size = stroke.size(); 
+    if (size > 2) {
+      Point p0 = stroke.get(size-2);
+      Point p1 = stroke.get(size-1);
+      context.moveTo(xPosToPix(p0.getX()), yPosToPix(p0.getY()));
+      context.lineTo(xPosToPix(p1.getX()), yPosToPix(p1.getY()));
+      context.stroke();
+    }
+  }
+
   @UiHandler("title")
   void handleValueChange(ValueChangeEvent<String> event) {
     if (presenter != null) {
       presenter.setTitle(event.getValue());
     }
   }
+  
 }
