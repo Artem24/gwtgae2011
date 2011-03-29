@@ -21,8 +21,11 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchEvent;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -42,7 +45,7 @@ import com.gwtplatform.mvp.client.ViewImpl;
  */
 public class SketchView extends ViewImpl implements SketchPresenter.MyView,
     MouseDownHandler, MouseMoveHandler, MouseUpHandler, TouchMoveHandler, TouchEndHandler, 
-    GestureStartHandler {
+    GestureStartHandler, TouchStartHandler {
 
   private final LayoutPanel widget;
 
@@ -111,6 +114,7 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
     canvas.addMouseDownHandler(this);
     canvas.addMouseMoveHandler(this);
     canvas.addMouseUpHandler(this);
+    canvas.addTouchStartHandler(this);
     canvas.addTouchMoveHandler(this);
     canvas.addTouchEndHandler(this);
     canvas.addGestureStartHandler(this);
@@ -229,48 +233,61 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
     }
   }
 
-  private void addPointToCurrentStroke(MouseEvent<?> event) {
-    currentStroke.add(new Point(xPixToPos(event.getRelativeX(canvasElement)),
-        yPixToPos(event.getRelativeY(canvasElement))));
-  }
-
   @Override
   public void onMouseUp(MouseUpEvent event) {
     DOM.releaseCapture(canvas.getElement());
     presenter.addNewStroke(currentStroke);
     currentStroke = null;
   }
+
+  @Override
+  public void onTouchStart(TouchStartEvent event) {
+    DOM.setCapture(canvasElement);
+    currentStroke = new Stroke();
+    addPointToCurrentStroke(event);
+    
+    event.preventDefault();
+  }
   
-  @UiHandler("title")
-  void handleValueChange(ValueChangeEvent<String> event) {
-    if (presenter != null) {
-      presenter.setTitle(event.getValue());
+  @Override
+  public void onTouchMove(TouchMoveEvent event) {
+    event.preventDefault();
+    if (DOM.getCaptureElement() == canvasElement) {
+      addPointToCurrentStroke(event);
+      scheduleRefresh();
     }
+  }
+
+  @Override
+  public void onTouchEnd(TouchEndEvent event) {
+    event.preventDefault();
+    DOM.releaseCapture(canvas.getElement());
+    presenter.addNewStroke(currentStroke);
+    currentStroke = null;
   }
 
   @Override
   public void onGestureStart(GestureStartEvent event) {
     event.preventDefault();
   }
+  
+  private void addPointToCurrentStroke(MouseEvent<?> event) {
+    currentStroke.add(new Point(xPixToPos(event.getRelativeX(canvasElement)),
+        yPixToPos(event.getRelativeY(canvasElement))));
+  }  
 
-  @Override
-  public void onTouchEnd(TouchEndEvent event) {
-    event.preventDefault();
-    presenter.addNewStroke(currentStroke);
-    currentStroke = null;
-  }
-
-  @Override
-  public void onTouchMove(TouchMoveEvent event) {
-    event.preventDefault();
+  private void addPointToCurrentStroke(TouchEvent<?> event) {
     if (event.getTouches().length() > 0) {
-      if (currentStroke == null) {
-        currentStroke = new Stroke();
-      }
       Touch touch = event.getTouches().get(0);
       currentStroke.add(new Point(xPixToPos(touch.getRelativeX(canvasElement)),
           yPixToPos(touch.getRelativeY(canvasElement))));
-      scheduleRefresh();
+    }
+  }  
+  
+  @UiHandler("title")
+  void handleValueChange(ValueChangeEvent<String> event) {
+    if (presenter != null) {
+      presenter.setTitle(event.getValue());
     }
   }
 }
