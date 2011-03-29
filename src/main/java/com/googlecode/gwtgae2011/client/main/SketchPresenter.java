@@ -57,6 +57,7 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
 
   private Long id;
   private SketchProxy sketchProxy;
+  private boolean fetching;
   
   public interface MyView extends View {
     public void setPresenter(SketchPresenter presenter);
@@ -76,12 +77,15 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
     sketchProxy = null;
     getView().setTitle("Untitled");
     getView().clear();
+    fetching = false;
     if (id != null) {
+      fetching = true;
       sketchRequestProvider.get().fetch(id).with("strokes").fire(new Receiver<SketchProxy>() {
         @Override
         public void onSuccess(SketchProxy sketchProxy) {
           SketchPresenter.this.sketchProxy = sketchProxy;
           draw(sketchProxy);
+          fetching = false;
         }
       });
     }
@@ -96,6 +100,9 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
   }
 
   public void addNewStroke(Stroke stroke) {
+    if (fetching) {
+      return;
+    }
     getView().addStroke(stroke);
     SketchRequest request = sketchRequestProvider.get();
     SketchProxy editable = getEditableProxy(request);
@@ -108,12 +115,11 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
     });
   }
 
-  public void setTitle(String title) {
-    if (title == null) {
+  public void setTitle(final String title) {
+    if (title == null || fetching) {
       return;      
     }
     if (sketchProxy == null || !title.equals(sketchProxy.getTitle())) {
-      getView().setTitle(title);  
       SketchRequest request = sketchRequestProvider.get();
       SketchProxy editable = getEditableProxy(request);
       editable.setTitle(title);
@@ -121,6 +127,7 @@ public class SketchPresenter extends Presenter<SketchPresenter.MyView, SketchPre
         @Override
         public void onSuccess(SketchProxy sketchProxy) {
           SketchPresenter.this.sketchProxy = sketchProxy;
+          getView().setTitle(title);  
         }
       });
     }

@@ -9,6 +9,9 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Touch;
+import com.google.gwt.event.dom.client.GestureStartEvent;
+import com.google.gwt.event.dom.client.GestureStartHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -16,6 +19,10 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -34,7 +41,8 @@ import com.gwtplatform.mvp.client.ViewImpl;
  * This view shows a drawing made by the user.
  */
 public class SketchView extends ViewImpl implements SketchPresenter.MyView,
-    MouseDownHandler, MouseMoveHandler, MouseUpHandler {
+    MouseDownHandler, MouseMoveHandler, MouseUpHandler, TouchMoveHandler, TouchEndHandler, 
+    GestureStartHandler {
 
   private final LayoutPanel widget;
 
@@ -103,6 +111,9 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
     canvas.addMouseDownHandler(this);
     canvas.addMouseMoveHandler(this);
     canvas.addMouseUpHandler(this);
+    canvas.addTouchMoveHandler(this);
+    canvas.addTouchEndHandler(this);
+    canvas.addGestureStartHandler(this);
   }
 
   private class MyLayoutPanel extends LayoutPanel {
@@ -234,6 +245,29 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   void handleValueChange(ValueChangeEvent<String> event) {
     if (presenter != null) {
       presenter.setTitle(event.getValue());
+    }
+  }
+
+  @Override
+  public void onGestureStart(GestureStartEvent event) {
+    event.preventDefault();
+  }
+
+  @Override
+  public void onTouchEnd(TouchEndEvent event) {
+    event.preventDefault();
+    presenter.addNewStroke(currentStroke);
+    currentStroke = null;
+  }
+
+  @Override
+  public void onTouchMove(TouchMoveEvent event) {
+    event.preventDefault();
+    if (event.getTouches().length() > 0) {
+      Touch touch = event.getTouches().get(0);
+      currentStroke.add(new Point(xPixToPos(touch.getRelativeX(canvasElement)),
+          yPixToPos(touch.getRelativeY(canvasElement))));
+      scheduleRefresh();
     }
   }
 }
