@@ -286,7 +286,7 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
 
   private void drawLastTwoPoints(Stroke stroke) {
     int size = stroke.size(); 
-    if (size > 2) {
+    if (size >= 2) {
       Point p0 = stroke.get(size-2);
       Point p1 = stroke.get(size-1);
       context.moveTo(xPosToPix(p0.getX()), yPosToPix(p0.getY()));
