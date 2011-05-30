@@ -26,7 +26,6 @@ import com.googlecode.gwtgae2011.client.main.SketchPresenter;
 import com.googlecode.gwtgae2011.shared.service.GwtGae2011RequestFactory;
 import com.gwtplatform.dispatch.client.gin.DispatchAsyncModule;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.ProxyFailureHandler;
 import com.google.gwt.inject.client.AsyncProvider;
 import com.googlecode.gwtgae2011.client.main.ListPresenter;
 
@@ -39,7 +38,6 @@ public interface GwtGae2011Ginjector extends Ginjector {
   // GWT-Platform standard dependencies
   EventBus getEventBus();
   PlaceManager getPlaceManager();
-  ProxyFailureHandler getProxyFailureHandler();
   GwtGae2011RequestFactory getRequestFactory();
 
   // Presenters from MainModule

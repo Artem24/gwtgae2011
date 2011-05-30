@@ -50,10 +50,10 @@
 
 		<!-- Dependencies versions -->
 		<aopalliance.version>1.0</aopalliance.version>
-		<gae.version>1.4.2</gae.version>
+		<gae.version>1.5.0</gae.version>
 		<gin.version>1.5.0</gin.version>
 		<guice.version>3.0-rc3</guice.version>
-		<gwt.version>2.2.0</gwt.version>
+		<gwt.version>2.3.0</gwt.version>
 		<gwtp.version>0.6-SNAPSHOT</gwtp.version>
 		<json.version>20090211</json.version>
 		<jsr107cache.version>1.1</jsr107cache.version>
@@ -353,11 +353,31 @@
 					<execution>
 						<id>gwtcompile</id>
 						<phase>prepare-package</phase>
+						<configuration>
+							<extraJvmArgs>-Xss1024k -Xmx512M</extraJvmArgs>
+						</configuration>
 						<goals>
 							<goal>compile</goal>
 						</goals>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.google.gwt</groupId>
+						<artifactId>gwt-user</artifactId>
+						<version>${gwt.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.google.gwt</groupId>
+						<artifactId>gwt-dev</artifactId>
+						<version>${gwt.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.google.gwt</groupId>
+						<artifactId>gwt-servlet</artifactId>
+						<version>${gwt.version}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 			<!-- AppEngine configuration -->

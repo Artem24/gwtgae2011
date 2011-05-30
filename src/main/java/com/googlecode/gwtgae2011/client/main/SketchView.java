@@ -241,7 +241,6 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
 
   @Override
   public void onTouchStart(TouchStartEvent event) {
-    DOM.setCapture(canvasElement);
     currentStroke = new Stroke();
     addPointToCurrentStroke(event);
     
@@ -251,15 +250,12 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   @Override
   public void onTouchMove(TouchMoveEvent event) {
     event.preventDefault();
-    if (DOM.getCaptureElement() == canvasElement) {
-      addPointToCurrentStroke(event);
-    }
+    addPointToCurrentStroke(event);
   }
 
   @Override
   public void onTouchEnd(TouchEndEvent event) {
     event.preventDefault();
-    DOM.releaseCapture(canvas.getElement());
     presenter.addNewStroke(currentStroke);
     currentStroke = null;
   }
@@ -276,7 +272,7 @@ public class SketchView extends ViewImpl implements SketchPresenter.MyView,
   }  
 
   private void addPointToCurrentStroke(TouchEvent<?> event) {
-    if (event.getTouches().length() > 0) {
+    if (currentStroke != null && event.getTouches().length() > 0) {
       Touch touch = event.getTouches().get(0);
       currentStroke.add(new Point(xPixToPos(touch.getRelativeX(canvasElement)),
           yPixToPos(touch.getRelativeY(canvasElement))));
